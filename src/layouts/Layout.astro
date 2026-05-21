@@ -15,7 +15,9 @@ const { title = "てんかわ思考ログ" } = Astro.props;
     <header class="border-b border-zinc-800">
       <div class="max-w-6xl mx-auto px-6 py-5">
         <h1 class="text-2xl font-bold tracking-wide">
-          てんかわ思考ログ
+          <a href="/" class="text-inherit no-underline hover:text-inherit">
+            てんかわ思考ログ
+          </a>
         </h1>
 
         <p class="text-sm text-zinc-500 mt-1">
@@ -26,7 +28,7 @@ const { title = "てんかわ思考ログ" } = Astro.props;
 
     <div class="border-b border-zinc-800">
       <div class="max-w-6xl mx-auto px-6 py-4">
-        <form role="search">
+        <form role="search" data-search-form>
           <label for="site-search" class="sr-only">検索</label>
 
           <input
@@ -107,11 +109,18 @@ const { title = "てんかわ思考ログ" } = Astro.props;
     <script>
       import Fuse from "fuse.js";
 
+      const searchForm = document.querySelector("[data-search-form]");
       const searchInput = document.querySelector("[data-search-input]");
       const articleElements = Array.from(
         document.querySelectorAll("[data-search-item]")
       );
       const emptyState = document.querySelector("[data-search-empty]");
+
+      if (searchForm instanceof HTMLFormElement) {
+        searchForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+        });
+      }
 
       if (searchInput instanceof HTMLInputElement && articleElements.length > 0) {
         const searchablePosts = articleElements.map((element, index) => ({
