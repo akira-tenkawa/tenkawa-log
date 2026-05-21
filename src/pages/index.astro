@@ -1,7 +1,9 @@
 ---
 import PostCard from "../components/PostCard.astro";
-import { posts } from "../data/posts";
+import { getAllPosts } from "../data/posts";
 import Layout from "../layouts/Layout.astro";
+
+const posts = await getAllPosts();
 ---
 
 <Layout>

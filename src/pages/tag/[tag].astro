@@ -1,35 +1,46 @@
 ---
 import PostCard from "../../components/PostCard.astro";
-import { getTagHref, posts, tags, type Post, type Tag } from "../../data/posts";
+import { getAllPosts, tags, type Post, type Tag } from "../../data/posts";
+import { findTagByRouteValue, getTagRouteParams } from "../../data/taxonomy";
 import Layout from "../../layouts/Layout.astro";
 
-export function getStaticPaths() {
-  return tags.map((tag) => ({
-    params: {
-      tag: tag.slug
-    },
-    props: {
-      tag,
-      tagPosts: posts.filter((post) =>
-        post.tags.some((postTag) => postTag.slug === tag.slug)
-      )
-    }
-  }));
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+
+  const paths = await Promise.all(
+    tags.map(async (tag) =>
+      getTagRouteParams(tag).map((tagParam) => ({
+        params: {
+          tag: tagParam
+        },
+        props: {
+          tag,
+          posts
+        }
+      }))
+    )
+  );
+
+  return paths.flat();
 }
 
 type Props = {
   tag: Tag;
-  tagPosts: Post[];
+  posts: Post[];
 };
 
-const { tag, tagPosts } = Astro.props as Props;
+const { tag, posts } = Astro.props as Props;
+const resolvedTag = findTagByRouteValue(Astro.params.tag ?? tag.slug) ?? tag;
+const tagPosts = posts.filter((post) =>
+  post.tags.some((postTag) => postTag.slug === resolvedTag.slug)
+);
 ---
 
-<Layout title={`${tag.name} | てんかわ思考ログ`}>
+<Layout title={`${resolvedTag.name} | てんかわ思考ログ`}>
   <div class="space-y-6">
     <header class="space-y-1">
-      <p class="text-xs tracking-wide text-zinc-500">Tag / {tag.name}</p>
-      <h1 class="text-xl font-semibold text-zinc-100 sm:text-2xl">{tag.name}</h1>
+      <p class="text-xs tracking-wide text-zinc-500">Tag / {resolvedTag.name}</p>
+      <h1 class="text-xl font-semibold text-zinc-100 sm:text-2xl">{resolvedTag.name}</h1>
     </header>
 
     {tagPosts.map((post) => (

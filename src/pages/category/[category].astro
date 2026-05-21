@@ -1,33 +1,54 @@
 ---
 import PostCard from "../../components/PostCard.astro";
-import { categories, posts, type Post } from "../../data/posts";
+import {
+  categories,
+  getAllPosts,
+  type Post
+} from "../../data/posts";
+import {
+  findCategoryByRouteValue,
+  getCategoryRouteParams
+} from "../../data/taxonomy";
 import Layout from "../../layouts/Layout.astro";
 
-export function getStaticPaths() {
-  return categories.map((category) => ({
-    params: {
-      category: category.slug
-    },
-    props: {
-      category,
-      categoryPosts: posts.filter((post) => post.category.slug === category.slug)
-    }
-  }));
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+
+  const paths = await Promise.all(
+    categories.map(async (category) =>
+      getCategoryRouteParams(category).map((categoryParam) => ({
+        params: {
+          category: categoryParam
+        },
+        props: {
+          category,
+          posts
+        }
+      }))
+    )
+  );
+
+  return paths.flat();
 }
 
 type Props = {
   category: Post["category"];
-  categoryPosts: Post[];
+  posts: Post[];
 };
 
-const { category, categoryPosts } = Astro.props as Props;
+const { category, posts } = Astro.props as Props;
+const resolvedCategory =
+  findCategoryByRouteValue(Astro.params.category ?? category.slug) ?? category;
+const categoryPosts = posts.filter(
+  (post) => post.category.slug === resolvedCategory.slug
+);
 ---
 
-<Layout title={`${category.name} | てんかわ思考ログ`}>
+<Layout title={`${resolvedCategory.name} | てんかわ思考ログ`}>
   <div class="space-y-6">
     <header class="space-y-1">
-      <p class="text-xs tracking-wide text-zinc-500">Category / {category.name}</p>
-      <h1 class="text-xl font-semibold text-zinc-100 sm:text-2xl">{category.name}</h1>
+      <p class="text-xs tracking-wide text-zinc-500">Category / {resolvedCategory.name}</p>
+      <h1 class="text-xl font-semibold text-zinc-100 sm:text-2xl">{resolvedCategory.name}</h1>
     </header>
 
     {categoryPosts.map((post) => (

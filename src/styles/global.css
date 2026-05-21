@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+.post-body p + p {
+  margin-top: 1.5rem;
+}

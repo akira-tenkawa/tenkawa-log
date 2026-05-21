@@ -1,37 +1,28 @@
-export type Category = {
-  name: string;
-  slug: string;
-};
-
-export type Tag = {
-  name: string;
-  slug: string;
-};
+import { getCollection, getEntry } from "astro:content";
+import {
+  categories,
+  findCategoryByRouteValue,
+  findTagByRouteValue,
+  getCategoryHref,
+  getPostHref,
+  getTagHref,
+  normalizeRouteValue,
+  tags,
+  type Category,
+  type Tag
+} from "./taxonomy";
 
 export type Post = {
   category: Category;
-  content: string[];
+  content?: string[];
   date: string;
+  entryId?: string;
   excerpt: string;
   slug: string;
+  source: "content" | "legacy";
   tags: Tag[];
   title: string;
 };
-
-export const categories: Category[] = [
-  { slug: "ai", name: "AI" },
-  { slug: "pc", name: "PC" },
-  { slug: "manga", name: "漫画" },
-  { slug: "movie", name: "映画" },
-  { slug: "zakki", name: "雑記" }
-];
-
-export const tags: Tag[] = [
-  { slug: "windows", name: "Windows" },
-  { slug: "mac", name: "Mac" },
-  { slug: "linux", name: "Linux" },
-  { slug: "dify", name: "Dify" }
-];
 
 const categoryBySlug = Object.fromEntries(
   categories.map((category) => [category.slug, category])
@@ -41,20 +32,7 @@ const tagBySlug = Object.fromEntries(
   tags.map((tag) => [tag.slug, tag])
 ) as Record<string, Tag>;
 
-export const posts: Post[] = [
-  {
-    slug: "dify-notes-for-local-testing",
-    title: "Difyをローカルで触り始めたメモ",
-    date: "2026.05.22",
-    excerpt: "AIワークフローを手元で試すために、Difyの導入と最初の確認ポイントをメモした。",
-    content: [
-      "AIワークフローを手元で試すために、Difyの導入を始めた。",
-      "まずは管理画面の流れと、プロンプトの差し替えやすさを確認している。",
-      "しばらくは小さい検証を積み重ねて、使いどころを見極めたい。"
-    ],
-    category: categoryBySlug.ai,
-    tags: [tagBySlug.linux, tagBySlug.dify]
-  },
+const legacyPosts: Post[] = [
   {
     slug: "windows-and-mac-desktop-notes",
     title: "WindowsとMacの使い分けメモ",
@@ -66,6 +44,7 @@ export const posts: Post[] = [
       "PC環境は一度固めるより、用途に合わせて少しずつ更新する方が合っている。"
     ],
     category: categoryBySlug.pc,
+    source: "legacy",
     tags: [tagBySlug.windows, tagBySlug.mac]
   },
   {
@@ -79,6 +58,7 @@ export const posts: Post[] = [
       "読み返すたびに違う感想が出る作品は、やっぱり長く残る。"
     ],
     category: categoryBySlug.manga,
+    source: "legacy",
     tags: [tagBySlug.mac]
   },
   {
@@ -92,6 +72,7 @@ export const posts: Post[] = [
       "観終わったあとに余韻が残る映画を、これからも少しずつ記録していきたい。"
     ],
     category: categoryBySlug.movie,
+    source: "legacy",
     tags: [tagBySlug.windows]
   },
   {
@@ -105,12 +86,88 @@ export const posts: Post[] = [
       "雑記は散らかって見えるけれど、あとで自分を助けるメモになる。"
     ],
     category: categoryBySlug.zakki,
+    source: "legacy",
     tags: [tagBySlug.linux]
   }
 ];
 
-export const getCategoryHref = (slug: string) => `/category/${slug}/`;
+const normalizeEntrySlug = (entryId: string) =>
+  entryId.replace(/\.(md|mdx)$/u, "");
 
-export const getPostHref = (slug: string) => `/posts/${slug}/`;
+const getContentPosts = async (): Promise<Post[]> => {
+  const entries = await getCollection("posts");
 
-export const getTagHref = (slug: string) => `/tag/${slug}/`;
+  return entries.map((entry) => {
+    const category = findCategoryByRouteValue(entry.data.category);
+    const entryTags = entry.data.tags
+      .map((tag) => findTagByRouteValue(tag))
+      .filter((tag): tag is Tag => Boolean(tag));
+
+    if (!category) {
+      throw new Error(`Unknown category in content post: ${entry.id}`);
+    }
+
+    return {
+      slug: normalizeEntrySlug(entry.id),
+      title: entry.data.title,
+      date: entry.data.date,
+      excerpt: entry.data.excerpt,
+      category,
+      entryId: entry.id,
+      source: "content",
+      tags: entryTags
+    };
+  });
+};
+
+export const getAllPosts = async (): Promise<Post[]> => {
+  const contentPosts = await getContentPosts();
+
+  return [...contentPosts, ...legacyPosts].sort((left, right) =>
+    right.date.localeCompare(left.date)
+  );
+};
+
+export const getPostsByCategory = async (categorySlug: string) => {
+  const posts = await getAllPosts();
+  const normalizedCategorySlug =
+    findCategoryByRouteValue(categorySlug)?.slug ?? normalizeRouteValue(categorySlug);
+
+  return posts.filter(
+    (post) => normalizeRouteValue(post.category.slug) === normalizedCategorySlug
+  );
+};
+
+export const getPostsByTag = async (tagSlug: string) => {
+  const posts = await getAllPosts();
+  const normalizedTagSlug =
+    findTagByRouteValue(tagSlug)?.slug ?? normalizeRouteValue(tagSlug);
+
+  return posts.filter((post) =>
+    post.tags.some((tag) => normalizeRouteValue(tag.slug) === normalizedTagSlug)
+  );
+};
+
+export const getPostBySlug = async (slug: string) => {
+  const posts = await getAllPosts();
+
+  return posts.find((post) => post.slug === slug);
+};
+
+export const getContentEntryByPost = async (post: Post) => {
+  if (post.source !== "content" || !post.entryId) {
+    return null;
+  }
+
+  return getEntry("posts", post.entryId);
+};
+
+export {
+  categories,
+  getCategoryHref,
+  getPostHref,
+  getTagHref,
+  tags
+};
+
+export type { Category, Tag };
