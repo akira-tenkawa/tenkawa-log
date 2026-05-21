@@ -1,17 +1,23 @@
 ---
-
+import Layout from "../layouts/Layout.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout>
+  <article class="space-y-8">
+    <div class="border-b border-zinc-800 pb-8">
+      <p class="text-sm text-zinc-500 mb-2">
+        2026.05.21
+      </p>
+
+      <h2 class="text-3xl font-bold mb-4">
+        Astroブログを始めた
+      </h2>
+
+      <p class="text-zinc-400 leading-8">
+        思考ログの基地を作りたかった。
+        WordPressではなく、
+        Astroで静かに積み上げていく。
+      </p>
+    </div>
+  </article>
+</Layout>

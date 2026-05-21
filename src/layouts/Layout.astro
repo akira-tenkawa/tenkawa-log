@@ -1,0 +1,105 @@
+---
+import "../styles/global.css";
+
+const { title = "てんかわ思考ログ" } = Astro.props;
+---
+
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title}</title>
+  </head>
+
+  <body class="bg-zinc-950 text-zinc-200">
+    <header class="border-b border-zinc-800">
+      <div class="max-w-6xl mx-auto px-6 py-5">
+        <h1 class="text-2xl font-bold tracking-wide">
+          てんかわ思考ログ
+        </h1>
+
+        <p class="text-sm text-zinc-500 mt-1">
+          AI / Linux / Flutter / 漫画 / 映画
+        </p>
+      </div>
+    </header>
+
+    <div class="border-b border-zinc-800">
+      <div class="max-w-6xl mx-auto px-6 py-4">
+        <form role="search">
+          <label for="site-search" class="sr-only">検索</label>
+
+          <input
+            id="site-search"
+            type="search"
+            placeholder="記事を検索"
+            class="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-500 outline-none focus:border-zinc-700"
+          />
+        </form>
+      </div>
+    </div>
+
+    <main class="max-w-6xl mx-auto grid grid-cols-1 gap-10 px-6 py-10 lg:grid-cols-12">
+      <section class="lg:col-span-8">
+        <slot />
+      </section>
+
+      <aside class="space-y-6 lg:col-span-4">
+        <div class="bg-zinc-900 p-5 rounded-xl">
+          <h2 class="text-lg font-semibold mb-3">広告</h2>
+
+          <div class="h-32 bg-zinc-800 rounded-lg"></div>
+        </div>
+
+        <div class="bg-zinc-900 p-5 rounded-xl">
+          <h2 class="text-lg font-semibold mb-3">
+            プロフィール
+          </h2>
+
+          <p class="text-sm text-zinc-400 leading-7">
+            AI、Linux、Flutter、
+            漫画、映画とかの思考ログ。
+          </p>
+        </div>
+
+        <div class="bg-zinc-900 p-5 rounded-xl">
+          <h2 class="text-lg font-semibold mb-3">
+            カテゴリ
+          </h2>
+
+          <ul class="space-y-2 text-zinc-400">
+            <li>PC</li>
+            <li>漫画</li>
+            <li>映画</li>
+          </ul>
+        </div>
+
+        <div class="bg-zinc-900 p-5 rounded-xl">
+          <h2 class="text-lg font-semibold mb-3">
+            タグ
+          </h2>
+
+          <div class="flex flex-wrap gap-2 text-sm">
+            <span class="bg-zinc-800 px-3 py-1 rounded-full">
+              AI
+            </span>
+
+            <span class="bg-zinc-800 px-3 py-1 rounded-full">
+              Linux
+            </span>
+
+            <span class="bg-zinc-800 px-3 py-1 rounded-full">
+              Flutter
+            </span>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="border-t border-zinc-800 mt-20">
+      <div class="max-w-6xl mx-auto px-6 py-6 text-sm text-zinc-500">
+        © 2026 てんかわ思考ログ
+      </div>
+    </footer>
+  </body>
+</html>

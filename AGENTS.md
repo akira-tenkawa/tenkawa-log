@@ -1,0 +1,5 @@
+- Minimal changes
+- Do not redesign layout
+- Keep simple CSS
+- Mobile first
+- No extra dependencies
