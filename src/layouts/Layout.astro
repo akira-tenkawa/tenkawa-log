@@ -30,7 +30,9 @@ const { title = "てんかわ思考ログ" } = Astro.props;
           <label for="site-search" class="sr-only">検索</label>
 
           <input
+            data-search-input
             id="site-search"
+            autocomplete="off"
             type="search"
             placeholder="記事を検索"
             class="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-500 outline-none focus:border-zinc-700"
@@ -101,5 +103,60 @@ const { title = "てんかわ思考ログ" } = Astro.props;
         © 2026 てんかわ思考ログ
       </div>
     </footer>
+
+    <script>
+      import Fuse from "fuse.js";
+
+      const searchInput = document.querySelector("[data-search-input]");
+      const articleElements = Array.from(
+        document.querySelectorAll("[data-search-item]")
+      );
+      const emptyState = document.querySelector("[data-search-empty]");
+
+      if (searchInput instanceof HTMLInputElement && articleElements.length > 0) {
+        const searchablePosts = articleElements.map((element, index) => ({
+          element,
+          index,
+          title: element.getAttribute("data-search-title") ?? ""
+        }));
+
+        const fuse = new Fuse(searchablePosts, {
+          keys: ["title"],
+          threshold: 0.4,
+          ignoreLocation: true,
+          minMatchCharLength: 1
+        });
+
+        const toggleResults = (query) => {
+          const keyword = query.trim();
+          const visibleIndexes =
+            keyword === ""
+              ? new Set(searchablePosts.map((post) => post.index))
+              : new Set(
+                  fuse.search(keyword).map((result) => result.item.index)
+                );
+
+          let visibleCount = 0;
+
+          searchablePosts.forEach((post) => {
+            const isVisible = visibleIndexes.has(post.index);
+
+            post.element.classList.toggle("hidden", !isVisible);
+
+            if (isVisible) {
+              visibleCount += 1;
+            }
+          });
+
+          if (emptyState instanceof HTMLElement) {
+            emptyState.classList.toggle("hidden", visibleCount !== 0);
+          }
+        };
+
+        searchInput.addEventListener("input", (event) => {
+          toggleResults(event.currentTarget.value);
+        });
+      }
+    </script>
   </body>
 </html>

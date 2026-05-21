@@ -1,23 +1,32 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { posts } from "../data/posts";
 ---
 
 <Layout>
-  <article class="space-y-8">
-    <div class="border-b border-zinc-800 pb-8">
-      <p class="text-sm text-zinc-500 mb-2">
-        2026.05.21
-      </p>
+  <div class="space-y-8">
+    {posts.map((post) => (
+      <article
+        class="border-b border-zinc-800 pb-8"
+        data-search-item
+        data-search-title={post.title}
+      >
+        <p class="mb-2 text-sm text-zinc-500">
+          {post.date}
+        </p>
 
-      <h2 class="text-3xl font-bold mb-4">
-        Astroブログを始めた
-      </h2>
+        <h2 class="mb-4 text-3xl font-bold">
+          {post.title}
+        </h2>
 
-      <p class="text-zinc-400 leading-8">
-        思考ログの基地を作りたかった。
-        WordPressではなく、
-        Astroで静かに積み上げていく。
-      </p>
-    </div>
-  </article>
+        <p class="leading-8 text-zinc-400">
+          {post.excerpt}
+        </p>
+      </article>
+    ))}
+
+    <p class="hidden rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-5 text-sm text-zinc-400" data-search-empty>
+      該当する記事はありません。
+    </p>
+  </div>
 </Layout>
