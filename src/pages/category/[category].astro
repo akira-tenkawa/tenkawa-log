@@ -1,0 +1,41 @@
+---
+import PostCard from "../../components/PostCard.astro";
+import { categories, posts, type Post } from "../../data/posts";
+import Layout from "../../layouts/Layout.astro";
+
+export function getStaticPaths() {
+  return categories.map((category) => ({
+    params: {
+      category: category.slug
+    },
+    props: {
+      category,
+      categoryPosts: posts.filter((post) => post.category.slug === category.slug)
+    }
+  }));
+}
+
+type Props = {
+  category: Post["category"];
+  categoryPosts: Post[];
+};
+
+const { category, categoryPosts } = Astro.props as Props;
+---
+
+<Layout title={`${category.name} | てんかわ思考ログ`}>
+  <div class="space-y-6">
+    <header class="space-y-1">
+      <p class="text-xs tracking-wide text-zinc-500">Category / {category.name}</p>
+      <h1 class="text-xl font-semibold text-zinc-100 sm:text-2xl">{category.name}</h1>
+    </header>
+
+    {categoryPosts.map((post) => (
+      <PostCard post={post} />
+    ))}
+
+    <p class="hidden rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-5 text-sm text-zinc-400" data-search-empty>
+      無いよ
+    </p>
+  </div>
+</Layout>

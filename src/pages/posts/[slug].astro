@@ -1,0 +1,133 @@
+---
+import { getCategoryHref, getTagHref, posts, type Post } from "../../data/posts";
+import Layout from "../../layouts/Layout.astro";
+
+export function getStaticPaths() {
+  return posts.map((post) => ({
+    params: {
+      slug: post.slug
+    },
+    props: {
+      post
+    }
+  }));
+}
+
+type Props = {
+  post: Post;
+};
+
+const { post } = Astro.props as Props;
+---
+
+<Layout title={`${post.title} | てんかわ思考ログ`}>
+  <article class="space-y-8">
+    <nav
+      aria-label="パンくずリスト"
+      class="flex flex-wrap items-center gap-2 text-sm text-zinc-500"
+    >
+      <a
+        href="/"
+        class="inline-flex items-center text-zinc-500 no-underline hover:text-zinc-200"
+        aria-label="ホーム"
+      >
+        <svg
+          aria-hidden="true"
+          class="h-4 w-4"
+          fill="none"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.8"
+          viewBox="0 0 24 24"
+        >
+          <path d="m3.75 10.5 8.25-6.75 8.25 6.75" />
+          <path d="M5.25 9.75v9.75h13.5V9.75" />
+        </svg>
+      </a>
+
+      <span>/</span>
+
+      <a
+        href={getCategoryHref(post.category.slug)}
+        class="text-zinc-500 no-underline hover:text-zinc-200"
+      >
+        {post.category.name}
+      </a>
+
+      <span>/</span>
+
+      <span class="text-zinc-400">{post.title}</span>
+    </nav>
+
+    <header class="space-y-4">
+      <h1 class="text-3xl font-bold leading-tight text-zinc-100 sm:text-4xl">
+        {post.title}
+      </h1>
+
+      <div class="flex flex-wrap items-center gap-3 text-sm text-zinc-400">
+        <div class="inline-flex items-center gap-2">
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.8"
+            viewBox="0 0 24 24"
+          >
+            <path d="M3.75 6.75A2.25 2.25 0 0 1 6 4.5h4.19a2.25 2.25 0 0 1 1.59.66l1.06 1.06a2.25 2.25 0 0 0 1.59.66H18a2.25 2.25 0 0 1 2.25 2.25V17.25A2.25 2.25 0 0 1 18 19.5H6a2.25 2.25 0 0 1-2.25-2.25V6.75Z" />
+          </svg>
+          <a
+            href={getCategoryHref(post.category.slug)}
+            class="text-zinc-400 no-underline hover:text-zinc-200"
+          >
+            {post.category.name}
+          </a>
+        </div>
+
+        <span class="text-zinc-600">/</span>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center gap-2">
+            <svg
+              aria-hidden="true"
+              class="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.8"
+              viewBox="0 0 24 24"
+            >
+              <path d="M8.25 7.5h-2.5a2.25 2.25 0 0 0-1.59.66l-.5.5a2.25 2.25 0 0 0 0 3.18l7 7a2.25 2.25 0 0 0 3.18 0l5-5a2.25 2.25 0 0 0 0-3.18l-7-7a2.25 2.25 0 0 0-1.59-.66h-2.5Z" />
+              <path d="M7.5 7.5h.008v.008H7.5V7.5Z" />
+            </svg>
+            <span>タグ</span>
+          </span>
+
+          {post.tags.map((tag) => (
+            <a
+              href={getTagHref(tag.slug)}
+              class="rounded-full bg-zinc-900 px-3 py-1 text-zinc-300 no-underline"
+              data-tag-link
+            >
+              {tag.name}
+            </a>
+          ))}
+        </div>
+
+        <span class="text-zinc-600">/</span>
+
+        <p>{post.date}</p>
+      </div>
+    </header>
+
+    <div class="space-y-6 leading-8 text-zinc-300">
+      {post.content.map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+    </div>
+  </article>
+</Layout>
