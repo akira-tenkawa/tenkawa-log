@@ -28,8 +28,7 @@ type Props = {
 
 const { post } = Astro.props as Props;
 const contentEntry = await getContentEntryByPost(post);
-const renderedMarkdown = contentEntry ? await render(contentEntry) : null;
-const Content = renderedMarkdown?.Content;
+const { Content } = await render(contentEntry);
 ---
 
 <Layout title={`${post.title} | てんかわ思考ログ`}>
@@ -137,15 +136,7 @@ const Content = renderedMarkdown?.Content;
     </header>
 
     <div class="post-body leading-8 text-zinc-300">
-      {Content ? (
-        <Content />
-      ) : (
-        <div class="space-y-6">
-          {post.content?.map((paragraph) => (
-            <p>{paragraph}</p>
-          ))}
-        </div>
-      )}
+      <Content />
     </div>
   </article>
 </Layout>
