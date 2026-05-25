@@ -20,7 +20,8 @@ export const tags: Tag[] = [
   { slug: "windows", name: "Windows" },
   { slug: "mac", name: "Mac" },
   { slug: "linux", name: "Linux" },
-  { slug: "dify", name: "Dify" }
+  { slug: "dify", name: "Dify" },
+  { slug: "zakki", name: "雑記" }
 ];
 
 export const categorySlugs = categories.map((category) => category.slug) as [
