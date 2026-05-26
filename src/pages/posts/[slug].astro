@@ -139,4 +139,72 @@ const { Content } = await render(contentEntry);
       <Content />
     </div>
   </article>
+
+  <dialog class="image-modal" data-image-modal aria-label="画像の拡大表示">
+    <div class="image-modal__inner" data-image-modal-inner>
+      <button
+        type="button"
+        class="image-modal__close"
+        data-image-modal-close
+        aria-label="拡大画像を閉じる"
+      >
+        ×
+      </button>
+
+      <img class="image-modal__image" data-image-modal-image alt="" />
+    </div>
+  </dialog>
+
+  <script>
+    const postBody = document.querySelector(".post-body");
+    const modal = document.querySelector("[data-image-modal]");
+    const modalInner = document.querySelector("[data-image-modal-inner]");
+    const modalImage = document.querySelector("[data-image-modal-image]");
+    const modalCloseButton = document.querySelector("[data-image-modal-close]");
+
+    if (
+      postBody instanceof HTMLElement &&
+      modal instanceof HTMLDialogElement &&
+      modalInner instanceof HTMLElement &&
+      modalImage instanceof HTMLImageElement &&
+      modalCloseButton instanceof HTMLButtonElement &&
+      typeof modal.showModal === "function"
+    ) {
+      const openModal = (image) => {
+        modalImage.src = image.currentSrc || image.src;
+        modalImage.alt = image.alt;
+        modal.showModal();
+      };
+
+      const closeModal = () => {
+        modal.close();
+      };
+
+      const zoomableImages = Array.from(postBody.querySelectorAll("img")).filter(
+        (image) =>
+          image instanceof HTMLImageElement &&
+          !(image.closest("a[href]") instanceof HTMLAnchorElement)
+      );
+
+      zoomableImages.forEach((image) => {
+        image.setAttribute("data-zoomable-image", "true");
+        image.addEventListener("click", () => {
+          openModal(image);
+        });
+      });
+
+      modalCloseButton.addEventListener("click", closeModal);
+
+      modal.addEventListener("click", (event) => {
+        if (!modalInner.contains(event.target)) {
+          closeModal();
+        }
+      });
+
+      modal.addEventListener("close", () => {
+        modalImage.removeAttribute("src");
+        modalImage.alt = "";
+      });
+    }
+  </script>
 </Layout>
