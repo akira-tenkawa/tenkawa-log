@@ -31,3 +31,11 @@ category: "zakki"
 ```bash
 npm run dev
 ```
+
+<div class="image-grid-2">
+
+![ヌテラ漫画](/images/zakki/nutera-optimized.webp)
+
+![ヌテラ漫画](/images/zakki/nutera-optimized.webp)
+
+</div>
