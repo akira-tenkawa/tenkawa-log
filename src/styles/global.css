@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+.post-body {
+  --code-block-bg: #111827;
+  --code-block-border: #27272a;
+  --code-block-text: #e4e4e7;
+  --code-block-radius: 0.875rem;
+  --code-block-padding: 1rem;
+  --code-copy-button-bg: rgba(24, 24, 27, 0.92);
+  --code-copy-button-border: rgba(82, 82, 91, 0.9);
+  --code-copy-button-text: #d4d4d8;
+  --code-copy-button-hover: #f4f4f5;
+  --code-copy-button-active-bg: rgba(39, 39, 42, 0.96);
+}
+
 .post-body p + p {
   margin-top: 1.5rem;
 }
@@ -27,6 +40,86 @@
 
 .post-body img[data-zoomable-image] {
   cursor: zoom-in;
+}
+
+.post-body pre {
+  position: relative;
+  overflow-x: auto;
+  margin-block: 1.75rem;
+  padding: calc(var(--code-block-padding) + 1.5rem) var(--code-block-padding)
+    var(--code-block-padding);
+  border: 1px solid var(--code-block-border);
+  border-radius: var(--code-block-radius);
+  background: var(--code-block-bg);
+  color: var(--code-block-text);
+  line-height: 1.7;
+}
+
+.post-body pre code {
+  display: block;
+  min-width: max-content;
+  font-family:
+    "SFMono-Regular",
+    "Consolas",
+    "Liberation Mono",
+    "Menlo",
+    monospace;
+  font-size: 0.9375rem;
+  background: transparent;
+  color: inherit;
+}
+
+.post-body .code-copy-button {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--code-copy-button-border);
+  border-radius: 0.65rem;
+  background: rgba(24, 24, 27, 0.72);
+  color: var(--code-copy-button-text);
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.post-body .code-copy-button:hover {
+  color: var(--code-copy-button-hover);
+  border-color: #71717a;
+  background: rgba(39, 39, 42, 0.88);
+}
+
+.post-body .code-copy-button[data-copied="true"] {
+  background: var(--code-copy-button-active-bg);
+  color: #fafafa;
+}
+
+.post-body .code-copy-button__icon,
+.post-body .code-copy-button__check {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+}
+
+.post-body .code-copy-button__check {
+  display: none;
+}
+
+.post-body .code-copy-button[data-copied="true"] .code-copy-button__icon {
+  display: none;
+}
+
+.post-body .code-copy-button[data-copied="true"] .code-copy-button__check {
+  display: block;
 }
 
 .image-modal {

@@ -162,48 +162,129 @@ const { Content } = await render(contentEntry);
     const modalImage = document.querySelector("[data-image-modal-image]");
     const modalCloseButton = document.querySelector("[data-image-modal-close]");
 
-    if (
-      postBody instanceof HTMLElement &&
-      modal instanceof HTMLDialogElement &&
-      modalInner instanceof HTMLElement &&
-      modalImage instanceof HTMLImageElement &&
-      modalCloseButton instanceof HTMLButtonElement &&
-      typeof modal.showModal === "function"
-    ) {
-      const openModal = (image) => {
-        modalImage.src = image.currentSrc || image.src;
-        modalImage.alt = image.alt;
-        modal.showModal();
+    if (postBody instanceof HTMLElement) {
+      if (
+        modal instanceof HTMLDialogElement &&
+        modalInner instanceof HTMLElement &&
+        modalImage instanceof HTMLImageElement &&
+        modalCloseButton instanceof HTMLButtonElement &&
+        typeof modal.showModal === "function"
+      ) {
+        const openModal = (image) => {
+          modalImage.src = image.currentSrc || image.src;
+          modalImage.alt = image.alt;
+          modal.showModal();
+        };
+
+        const closeModal = () => {
+          modal.close();
+        };
+
+        const zoomableImages = Array.from(postBody.querySelectorAll("img")).filter(
+          (image) =>
+            image instanceof HTMLImageElement &&
+            !(image.closest("a[href]") instanceof HTMLAnchorElement)
+        );
+
+        zoomableImages.forEach((image) => {
+          image.setAttribute("data-zoomable-image", "true");
+          image.addEventListener("click", () => {
+            openModal(image);
+          });
+        });
+
+        modalCloseButton.addEventListener("click", closeModal);
+
+        modal.addEventListener("click", (event) => {
+          if (!modalInner.contains(event.target)) {
+            closeModal();
+          }
+        });
+
+        modal.addEventListener("close", () => {
+          modalImage.removeAttribute("src");
+          modalImage.alt = "";
+        });
+      }
+
+      const copyCodeText = async (text) => {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(text);
+          return;
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "absolute";
+        textarea.style.left = "-9999px";
+        document.body.append(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
       };
 
-      const closeModal = () => {
-        modal.close();
-      };
-
-      const zoomableImages = Array.from(postBody.querySelectorAll("img")).filter(
-        (image) =>
-          image instanceof HTMLImageElement &&
-          !(image.closest("a[href]") instanceof HTMLAnchorElement)
+      const codeBlocks = Array.from(postBody.querySelectorAll("pre")).filter(
+        (codeBlock) => codeBlock instanceof HTMLPreElement
       );
 
-      zoomableImages.forEach((image) => {
-        image.setAttribute("data-zoomable-image", "true");
-        image.addEventListener("click", () => {
-          openModal(image);
-        });
-      });
+      codeBlocks.forEach((codeBlock) => {
+        const codeElement = codeBlock.querySelector("code");
+        const codeText = codeElement?.textContent?.trimEnd();
 
-      modalCloseButton.addEventListener("click", closeModal);
-
-      modal.addEventListener("click", (event) => {
-        if (!modalInner.contains(event.target)) {
-          closeModal();
+        if (!codeElement || !codeText) {
+          return;
         }
-      });
 
-      modal.addEventListener("close", () => {
-        modalImage.removeAttribute("src");
-        modalImage.alt = "";
+        const copyButton = document.createElement("button");
+        let copiedTimer = 0;
+
+        copyButton.type = "button";
+        copyButton.className = "code-copy-button";
+        copyButton.setAttribute("aria-label", "コードをコピー");
+        copyButton.setAttribute("title", "コードをコピー");
+        copyButton.innerHTML = `
+          <svg
+            class="code-copy-button__icon"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="9" y="9" width="10" height="10" rx="2"></rect>
+            <path d="M15 9V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
+          </svg>
+          <svg
+            class="code-copy-button__check"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m6.5 12.5 3.5 3.5 7.5-8"></path>
+          </svg>
+        `;
+
+        copyButton.addEventListener("click", async () => {
+          try {
+            await copyCodeText(codeText);
+            copyButton.dataset.copied = "true";
+            window.clearTimeout(copiedTimer);
+            copiedTimer = window.setTimeout(() => {
+              delete copyButton.dataset.copied;
+            }, 1800);
+          } catch {
+            window.clearTimeout(copiedTimer);
+          }
+        });
+
+        codeBlock.append(copyButton);
       });
     }
   </script>

@@ -27,3 +27,7 @@ category: "zakki"
 ヌテラを制御できていない。
 
 [Googleを見る](https://google.com)
+
+```bash
+npm run dev
+```
