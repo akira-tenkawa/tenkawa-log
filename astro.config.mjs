@@ -67,10 +67,45 @@ function remarkImageClassShortcuts() {
   };
 }
 
+function isExternalLinkHref(href) {
+  return /^https?:\/\//i.test(href) || /^\/\//.test(href);
+}
+
+function mergeRelValues(existingRel) {
+  const relValues = Array.isArray(existingRel)
+    ? existingRel
+    : typeof existingRel === 'string'
+      ? existingRel.split(/\s+/).filter(Boolean)
+      : [];
+
+  return [...new Set([...relValues, 'noopener', 'noreferrer'])].join(' ');
+}
+
+function rehypeExternalLinks() {
+  return (tree) => {
+    visitNodes(tree, (node) => {
+      if (node.type !== 'element' || node.tagName !== 'a') {
+        return;
+      }
+
+      const href = node.properties?.href;
+
+      if (typeof href !== 'string' || !isExternalLinkHref(href)) {
+        return;
+      }
+
+      node.properties ??= {};
+      node.properties.target = '_blank';
+      node.properties.rel = mergeRelValues(node.properties.rel);
+    });
+  };
+}
+
 // https://astro.build/config
 export default defineConfig({
   markdown: {
-    remarkPlugins: [remarkImageClassShortcuts]
+    remarkPlugins: [remarkImageClassShortcuts],
+    rehypePlugins: [rehypeExternalLinks]
   },
   vite: {
     plugins: [tailwindcss()]

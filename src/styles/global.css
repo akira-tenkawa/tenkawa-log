@@ -4,6 +4,18 @@
   margin-top: 1.5rem;
 }
 
+.post-body a:not(:has(img)) {
+  color: #a1c4fd;
+  text-decoration: none;
+  text-underline-offset: 0.2em;
+  transition: color 160ms ease, text-decoration-color 160ms ease;
+}
+
+.post-body a:not(:has(img)):hover {
+  color: #c4dbff;
+  text-decoration: underline;
+}
+
 .post-body img[class^="img-"],
 .post-body img[class*=" img-"] {
   display: block;

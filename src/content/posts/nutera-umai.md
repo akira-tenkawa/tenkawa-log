@@ -25,3 +25,5 @@ category: "zakki"
 
 人類はまだ、
 ヌテラを制御できていない。
+
+[Googleを見る](https://google.com)
