@@ -3,3 +3,26 @@
 .post-body p + p {
   margin-top: 1.5rem;
 }
+
+.post-body img[class^="img-"],
+.post-body img[class*=" img-"] {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+@media (min-width: 768px) {
+  .post-body img.img-small {
+    max-width: 300px;
+  }
+
+  .post-body img.img-medium {
+    max-width: 700px;
+  }
+
+  .post-body img.img-large {
+    max-width: 1000px;
+  }
+}

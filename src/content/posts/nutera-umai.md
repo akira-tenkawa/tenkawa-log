@@ -8,7 +8,7 @@ category: "zakki"
 
 # ヌテラうますぎ問題
 
-![ヌテラ漫画](/images/zakki/nutera-optimized.webp)
+![ヌテラ漫画](/images/zakki/nutera-optimized.webp){.img-small} 
 
 「今日はもう何も食べない」
 
