@@ -11,6 +11,7 @@ const posts = defineCollection({
     title: z.string(),
     date: z.string(),
     excerpt: z.string(),
+    ogImage: z.string().optional(),
     category: z.enum(categorySlugs),
     tags: z.array(z.enum(tagSlugs))
   })

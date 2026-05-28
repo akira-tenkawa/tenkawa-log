@@ -17,6 +17,7 @@ export type Post = {
   date: string;
   entryId: string;
   excerpt: string;
+  ogImage?: string;
   slug: string;
   tags: Tag[];
   title: string;
@@ -24,6 +25,14 @@ export type Post = {
 
 const normalizeEntrySlug = (entryId: string) =>
   entryId.replace(/\.(md|mdx)$/u, "");
+
+const getSortablePostDate = (date: string) => {
+  const [year = 0, month = 0, day = 0] = date
+    .split(/[-.]/u)
+    .map((value) => Number.parseInt(value, 10));
+
+  return year * 10000 + month * 100 + day;
+};
 
 export const getAllPosts = async (): Promise<Post[]> => {
   const entries = await getCollection("posts");
@@ -44,12 +53,16 @@ export const getAllPosts = async (): Promise<Post[]> => {
         title: entry.data.title,
         date: entry.data.date,
         excerpt: entry.data.excerpt,
+        ogImage: entry.data.ogImage,
         category,
         entryId: entry.id,
         tags: entryTags
       };
     })
-    .sort((left, right) => right.date.localeCompare(left.date));
+    .sort(
+      (left, right) =>
+        getSortablePostDate(right.date) - getSortablePostDate(left.date)
+    );
 };
 
 export const getPostsByCategory = async (categorySlug: string) => {

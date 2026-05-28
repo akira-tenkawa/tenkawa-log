@@ -2,7 +2,18 @@
 import "../styles/global.css";
 import { categories, getCategoryHref, getTagHref, tags } from "../data/posts";
 
-const { title = "てんかわ思行ログ" } = Astro.props;
+const defaultDescription = "AI / PC / 漫画 / 映画 / 雑記の記録をまとめたブログです。";
+const defaultOgpImage = "/images/ogp-default.png";
+
+const {
+  title = "てんかわ思行ログ",
+  description = defaultDescription,
+  ogImage = defaultOgpImage
+} = Astro.props;
+
+const resolvedOgpImage = Astro.site
+  ? new URL(ogImage, Astro.site).toString()
+  : ogImage;
 ---
 
 <html lang="ja">
@@ -10,6 +21,11 @@ const { title = "てんかわ思行ログ" } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={resolvedOgpImage} />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
 
   <body class="bg-zinc-950 text-zinc-200">

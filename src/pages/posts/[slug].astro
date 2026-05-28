@@ -31,7 +31,11 @@ const contentEntry = await getContentEntryByPost(post);
 const { Content } = await render(contentEntry);
 ---
 
-<Layout title={`${post.title} | てんかわ思考ログ`}>
+<Layout
+  title={`${post.title} | てんかわ思考ログ`}
+  description={post.excerpt}
+  ogImage={post.ogImage}
+>
   <article class="space-y-8">
     <nav
       aria-label="パンくずリスト"
